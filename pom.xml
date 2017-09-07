@@ -31,11 +31,10 @@
   </licenses>
   <modules>
     <module>rbac-rest-service</module>
-    <module>spring-boot-cloud-seed</module>
+    <!--<module>spring-boot-cloud-seed</module>-->
     <module>commons</module>
     <module>showcase</module>
     <module>ssm-xml-crud</module>
-    <!--<module>ssm-xml-crud</module>-->
   </modules>
 
   <!-- 设定除中央仓库 (repo1.maven.org/maven2/)外的其他仓库,按设定顺序进行查询，如有Nexus私服, 取消注释并指向正确的服务器地址
@@ -68,9 +67,9 @@
     <jetty-plugin.version>9.3.0.M2</jetty-plugin.version>
     <!--test-->
     <junit.version>4.12</junit.version>
-    <powermock.version>1.6.0</powermock.version>
+    <powermock.version>1.6.1</powermock.version>
+    <mockito.version>1.10.8</mockito.version>
     <assertj.version>3.8.0</assertj.version>
-    <mockito.version>1.10.16</mockito.version>
     <selenium.version>2.42.2</selenium.version>
     <!--spring-->
     <spring-boot-version>1.5.6.RELEASE</spring-boot-version>
@@ -121,6 +120,9 @@
     <lucene.version>6.0.1</lucene.version>
     <!--rpc-->
     <dubbo.version>2.5.3</dubbo.version>
+    <!--no sql-->
+    <jedis.version>2.6.1</jedis.version>
+    <nosqlunit.version>0.8.0</nosqlunit.version>
   </properties>
 
   <!--这些依赖自动被子模块继承-->
@@ -133,13 +135,43 @@
 
   </dependencyManagement>
 
+  <profiles>
+    <profile>
+      <id>Slow</id>
+      <properties>
+        <testcase.groups>org.web2017.test.category.SlowTest</testcase.groups>
+      </properties>
+    </profile>
+    <profile>
+      <id>Fast</id>
+      <properties>
+        <testcase.groups>org.web2017.test.category.FastTest</testcase.groups>
+      </properties>
+    </profile>
+  </profiles>
   <build>
     <plugins>
       <!--boot打包插件-->
-      <!--<plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>-->
+      <!--<plugin>-->
+      <!--<groupId>org.springframework.boot</groupId>-->
+      <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+      <!--</plugin>-->
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.13</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-junit47</artifactId>
+            <version>2.13</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <groups>${testcase.groups}</groups>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

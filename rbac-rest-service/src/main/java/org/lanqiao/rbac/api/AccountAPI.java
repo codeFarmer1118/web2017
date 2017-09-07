@@ -1,6 +1,8 @@
 package org.lanqiao.rbac.api;
 
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -31,6 +33,7 @@ public class AccountAPI {
 
   @PostMapping
   public Result add(Account account) {
+    account.setPassword(MD5Util.md5(account.getPassword(),SysConst.SALT));
     accountService.save(account);
     return ResultGenerator.genSuccessResult();
   }
@@ -54,13 +57,14 @@ public class AccountAPI {
   }
 
   @GetMapping
+  @ApiOperation("分页展示账户信息")
   public Result list(Integer pageNumber, Integer pageSize) {
     PageInfo pageInfo = accountService.findAll(pageNumber, pageSize);
     return ResultGenerator.genSuccessResult(pageInfo);
   }
 
-  @RequestMapping("/login")
-  // @ApiOperation(value = "登录验证", /*httpMethod = "GET",*/ response = Result.class, notes = "登录验证")
+  @RequestMapping(value = "/login",method = {RequestMethod.GET,RequestMethod.POST})
+  @ApiOperation(value = "登录验证", /*httpMethod = "GET",*/ /*response = Result.class,*/ notes = "登录验证")
   public Result login(Account account) {
     if (null == account.getAccount()) {
       return ResultGenerator.genFailResult("请登录");
